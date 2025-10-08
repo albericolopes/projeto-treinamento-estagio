@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>SBDF</title>
+</h:head>
+
+<h:body>
+    <h1>Cadastro de Time</h1>
+
+    <h:form>
+        <h:panelGrid columns="3">
+            <h:outputLabel for="nome" value="Nome:"/>
+            <h:inputText id="nome" value="#{teamBean.team.name}"/>
+
+            <h:outputLabel for="cidade" value="Cidade:"/>
+            <h:inputText id="cidade" value="#{teamBean.team.city}"/>
+
+            <h:outputLabel for="estadio" value="Estádio:"/>
+            <h:inputText id="estadio" value="#{teamBean.team.stadium}"/>
+        </h:panelGrid>
+
+        <h:commandButton value="Cadastrar" action="#{teamBean.saveTeam}" />
+    </h:form>
+
+</h:body>
+</html>
