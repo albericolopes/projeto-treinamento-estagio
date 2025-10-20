@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+	<title>Cadastro de Times</title>
+</h:head>
+
+<h:body>
+
+	<!-- Botão Voltar -->
+	<h:form>
+		<div style="padding: 10px; background-color: #f8f9fa;">
+			<p:commandButton value="Voltar ao Menu"
+				action="index?faces-redirect=true" icon="pi pi-arrow-left"
+				styleClass="p-button-outlined p-button-secondary" />
+		</div>
+	</h:form>
+
+	<p:growl id="messages" showDetail="true" life="4000" />
+
+	<!-- FORM: Cadastro -->
+	<h:form id="teamForm">
+		<p:panel header="Cadastro de Time" style="margin-bottom:20px;">
+			<h:panelGrid columns="2" columnClasses="p-col-12 p-md-4 p-field"
+				styleClass="p-fluid p-formgrid p-grid">
+
+				<p:outputLabel for="name" value="Nome:" />
+				<p:inputText id="name" value="#{teamMB.team.name}" required="true"
+					requiredMessage="Nome é obrigatório" />
+
+				<p:outputLabel for="city" value="Cidade:" />
+				<p:inputText id="city" value="#{teamMB.team.city}" required="true"
+					requiredMessage="Cidade é obrigatória" />
+
+				<p:outputLabel for="stadium" value="Estádio:" />
+				<p:inputText id="stadium" value="#{teamMB.team.stadium}"
+					required="false" />
+
+			</h:panelGrid>
+
+			<p:commandButton value="Salvar" action="#{teamMB.saveTeam}"
+				update=":tableForm:teamsTable :messages" icon="pi pi-save"
+				disableOnClick="true" />
+
+			<p:commandButton value="Novo" action="#{teamMB.prepareNewTeam}"
+				update="name city stadium" icon="pi pi-plus"
+				styleClass="p-button-secondary" />
+		</p:panel>
+	</h:form>
+
+	<!-- Painel de Lista de Times -->
+	<h:form id="searchForm">
+		<p:panel header="Lista de Times">
+		<!-- Busca de Times -->
+			<p:toolbar>
+				<p:toolbarGroup>
+					<p:inputText id="searchNameInput" value="#{teamMB.searchName}"
+						placeholder="Buscar por nome" />
+					<p:commandButton value="Buscar" action="#{teamMB.findTeamByName}"
+						update=":tableForm:teamsTable :messages" icon="pi pi-search"
+						process="@this searchNameInput" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:inputText id="searchCityInput" value="#{teamMB.searchCity}"
+						placeholder="Buscar por cidade" />
+					<p:commandButton value="Buscar" action="#{teamMB.findTeamByCity}"
+						update=":tableForm:teamsTable :messages" icon="pi pi-search"
+						process="@this searchCityInput" />
+				</p:toolbarGroup>
+			</p:toolbar>
+
+			<p:commandButton value="Mostrar Todos"
+				action="#{teamMB.loadAllTeams}"
+				update=":tableForm:teamsTable :messages" icon="pi pi-list"
+				style="margin-top:10px" styleClass="p-button-secondary" />
+		</p:panel>
+	</h:form>
+
+	<!--Tabela de times -->
+	<h:form id="tableForm">
+		<p:dataTable id="teamsTable" value="#{teamMB.teams}" var="t"
+			paginator="true" rows="10" emptyMessage="Nenhum time encontrado."
+			style="margin-top:10px">
+
+			<p:column headerText="Nome">
+				<h:outputText value="#{t.name}" />
+			</p:column>
+
+			<p:column headerText="Cidade">
+				<h:outputText value="#{t.city}" />
+			</p:column>
+
+			<p:column headerText="Estádio">
+				<h:outputText value="#{t.stadium}" />
+			</p:column>
+
+			<p:column headerText="Ações" style="width:120px; text-align:center;">
+				<p:commandButton icon="pi pi-pencil" action="#{teamMB.editTeam(t)}"
+					update=":teamForm:name :teamForm:city :teamForm:stadium"
+					process="@this" title="Editar"
+					styleClass="p-button-rounded p-button-success p-button-outlined" />
+				<p:commandButton icon="pi pi-trash" action="#{teamMB.deleteTeam(t)}"
+					update="teamsTable :messages" process="@this" title="Excluir"
+					styleClass="p-button-danger p-button-rounded p-button-outlined"
+					onclick="return confirm('Tem certeza que deseja excluir este time?');" />
+			</p:column>
+		</p:dataTable>
+	</h:form>
+
+</h:body>
+</html>

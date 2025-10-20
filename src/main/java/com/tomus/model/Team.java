@@ -1,4 +1,4 @@
-package com.tomus.classes;
+package com.tomus.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +45,20 @@ public class Team {
 		players.add(player);
 		player.setTeam(this);
 	}
+	
+	@Override  
+    public int hashCode() {  
+        return (id == null) ? 0 : id;
+    }  
+  
+    @Override  
+    public boolean equals(Object obj) {  
+        if (obj == null)  return false;  
+        if (obj instanceof Team){
+            return ((Team)obj).getId().equals(this.id);  
+        }
+        return false;  
+    } 
 
 	public String getName() {
 		return name;
@@ -72,6 +86,10 @@ public class Team {
 
 	public Integer getId() {
 		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 }

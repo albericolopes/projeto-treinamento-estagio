@@ -1,7 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html>
-  <head><title>Teste</title></head>
-  <body>
-    <h1>Aplicação rodando!</h1>
-  </body>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<title>Sistema de Gestão - Times e Jogadores</title>
+	<style>
+body {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	font-family: Arial, sans-serif;
+}
+
+.container {
+	text-align: center;
+	padding: 40px;
+}
+
+.title {
+	color: white;
+	font-size: 2.5em;
+	margin-bottom: 10px;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 1.2em;
+	margin-bottom: 50px;
+}
+
+.cards-container {
+	display: flex;
+	gap: 30px;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.card {
+	background: white;
+	border-radius: 15px;
+	padding: 40px 30px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+	transition: transform 0.3s, box-shadow 0.3s;
+	min-width: 250px;
+	cursor: pointer;
+}
+
+.card:hover {
+	transform: translateY(-10px);
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card-icon {
+	font-size: 4em;
+	margin-bottom: 20px;
+}
+
+.card-title {
+	font-size: 1.8em;
+	color: #333;
+	margin-bottom: 15px;
+	font-weight: bold;
+}
+
+.card-description {
+	color: #666;
+	margin-bottom: 25px;
+	font-size: 1em;
+}
+
+.team-card {
+	border-top: 5px solid #667eea;
+}
+
+.player-card {
+	border-top: 5px solid #764ba2;
+}
+</style>
+</h:head>
+<h:body>
+	<div class="container">
+		<h1 class="title">Sistema de Gestão Esportiva</h1>
+		<p class="subtitle">Gerencie seus times e jogadores de forma
+			simples e eficiente</p>
+
+		<div class="cards-container">
+			<!-- Card Times -->
+			<h:form>
+				<div class="card team-card"
+					onclick="document.getElementById('btnTeam').click()">
+					<div class="card-icon">🏆</div>
+					<div class="card-title">Times</div>
+					<p class="card-description">Cadastre de times</p>
+					<p:commandButton id="btnTeam" value="Acessar Times"
+						action="team?faces-redirect=true" icon="pi pi-arrow-right"
+						styleClass="p-button-raised p-button-primary" />
+				</div>
+			</h:form>
+
+			<!-- Card Jogadores -->
+			<h:form>
+				<div class="card player-card"
+					onclick="document.getElementById('btnPlayer').click()">
+					<div class="card-icon">⚽</div>
+					<div class="card-title">Jogadores</div>
+					<p class="card-description">Cadastro de jogadores</p>
+					<p:commandButton id="btnPlayer" value="Acessar Jogadores"
+						action="player?faces-redirect=true" icon="pi pi-arrow-right"
+						styleClass="p-button-raised p-button-secondary" />
+				</div>
+			</h:form>
+		</div>
+	</div>
+</h:body>
 </html>
