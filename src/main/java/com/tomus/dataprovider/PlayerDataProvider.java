@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
 
 import com.tomus.model.Player;
+import com.tomus.model.Position;
 
 @ApplicationScoped
 public class PlayerDataProvider extends DataProvider implements Serializable {
@@ -66,7 +67,7 @@ public class PlayerDataProvider extends DataProvider implements Serializable {
 	public List<Player> findPlayerByName(String name) {
 		TypedQuery<Player> query = entityManager
 				.createQuery("SELECT p FROM Player p WHERE LOWER(p.name) LIKE LOWER(:name)", Player.class);
-		query.setParameter("name",  '%' + name + '%' );
+		query.setParameter("name", '%' + name + '%');
 		return query.getResultList();
 	}
 
@@ -77,9 +78,9 @@ public class PlayerDataProvider extends DataProvider implements Serializable {
 		return query.getResultList();
 	}
 
-	public List<Player> findPlayersByPosition(String position) {
-		TypedQuery<Player> query = entityManager
-				.createQuery("SELECT p FROM Player p WHERE LOWER(p.position) = LOWER(:position)", Player.class);
+	public List<Player> findPlayersByPosition(Position position) {
+		TypedQuery<Player> query = entityManager.createQuery("SELECT p FROM Player p WHERE p.position = :position",
+				Player.class);
 		query.setParameter("position", position);
 		return query.getResultList();
 	}

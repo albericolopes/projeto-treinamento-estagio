@@ -14,8 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.tomus.labels.Position;
-
 @Entity
 @Table(name = "jogador")
 public class Player {

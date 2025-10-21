@@ -1,4 +1,4 @@
-package com.tomus.labels;
+package com.tomus.model;
 
 public enum Position {
     GOLEIRO("Goleiro"),

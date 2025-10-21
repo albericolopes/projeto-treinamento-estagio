@@ -84,14 +84,22 @@
 				</p:toolbarGroup>
 
 				<p:toolbarGroup align="center">
-					<p:inputText id="searchPositionInput"
+					<p:selectOneMenu id="searchPositionInput"
 						value="#{playerMB.searchPosition}"
-						placeholder="Buscar por posição" />
+						style="width:200px; vertical-align: middle;">
+						<f:selectItem itemLabel="Buscar por posição" itemValue=""
+							noSelectionOption="true" />
+						<f:selectItems value="#{playerMB.positions}" var="pos"
+							itemLabel="#{pos.label}" itemValue="#{pos.name()}" />
+					</p:selectOneMenu>
+
+
 					<p:commandButton value="Buscar"
 						action="#{playerMB.findPlayersByPosition}"
 						update=":tableForm:playersTable :messages" icon="pi pi-search"
 						process="@this searchPositionInput" />
 				</p:toolbarGroup>
+
 
 				<p:toolbarGroup align="right">
 					<p:inputText id="searchTeamInput" value="#{playerMB.searchTeam}"
@@ -131,7 +139,7 @@
 			</p:column>
 
 			<p:column headerText="Posição">
-				<h:outputText value="#{p.position}" />
+				<h:outputText value="#{p.position != null ? p.position.label : ''}" />
 			</p:column>
 
 			<p:column headerText="Time">

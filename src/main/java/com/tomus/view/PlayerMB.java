@@ -12,8 +12,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.tomus.dataprovider.PlayerDataProvider;
-import com.tomus.labels.Position;
 import com.tomus.model.Player;
+import com.tomus.model.Position;
 
 @Named("playerMB")
 @ViewScoped
@@ -29,7 +29,7 @@ public class PlayerMB implements Serializable {
 
 	private String searchName;
 	private String searchTeam;
-	private String searchPosition;
+	private Position searchPosition;
 
 	@PostConstruct
 	public void init() {
@@ -99,6 +99,11 @@ public class PlayerMB implements Serializable {
 	}
 
 	public void findPlayersByPosition() {
+		if (searchPosition == null) {
+			showInfo("Selecione uma posição para buscar.");
+			return;
+		}
+
 		players = playerProvider.findPlayersByPosition(searchPosition);
 		if (players == null || players.isEmpty()) {
 			showInfo("Nenhum jogador encontrado para a posição informada.");
@@ -138,8 +143,8 @@ public class PlayerMB implements Serializable {
 	public void setPlayers(List<Player> players) {
 		this.players = players;
 	}
-	
-	public List<Position> getPositions(){
+
+	public List<Position> getPositions() {
 		return Arrays.asList(Position.values());
 	}
 
@@ -159,11 +164,11 @@ public class PlayerMB implements Serializable {
 		this.searchTeam = searchTeam;
 	}
 
-	public String getSearchPosition() {
+	public Position getSearchPosition() {
 		return searchPosition;
 	}
 
-	public void setSearchPosition(String searchPosition) {
+	public void setSearchPosition(Position searchPosition) {
 		this.searchPosition = searchPosition;
 	}
 
