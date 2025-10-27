@@ -31,7 +31,7 @@ public class Player {
 	private Date birthDate;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "posicao")
+	@Column(name = "posicao", nullable = true)
 	private Position position;
 
 	@ManyToOne

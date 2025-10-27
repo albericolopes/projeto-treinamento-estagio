@@ -1,6 +1,7 @@
 package com.tomus.view;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import javax.inject.Named;
 import com.tomus.dataprovider.PlayerDataProvider;
 import com.tomus.model.Player;
 import com.tomus.model.Position;
+import com.tomus.model.Team;
 
 @Named("playerMB")
 @ViewScoped
@@ -26,9 +28,10 @@ public class PlayerMB implements Serializable {
 
 	private Player player;
 	private List<Player> players;
-
+	
+	private Player playerToDelete;
 	private String searchName;
-	private String searchTeam;
+	private Team searchTeam;
 	private Position searchPosition;
 
 	@PostConstruct
@@ -73,41 +76,64 @@ public class PlayerMB implements Serializable {
 	public void editPlayer(Player chosenPlayer) {
 		this.player = chosenPlayer;
 	}
-
-	public void deletePlayer(Player chosenPlayer) {
-		try {
-			playerProvider.deletePlayer(chosenPlayer);
-			showInfo("Jogador removido com sucesso.");
-			loadAllPlayers();
-		} catch (Exception e) {
-			showError("Erro ao remover jogador: " + e.getMessage());
-		}
+	
+	public void prepareDelete(Player selectedPlayer) {
+	    this.playerToDelete = selectedPlayer;
 	}
 
-	public void findPlayerByName() {
-		players = playerProvider.findPlayerByName(searchName);
-		if (players == null || players.isEmpty()) {
-			showInfo("Nenhum jogador encontrado com o nome informado.");
-		}
+	public void deletePlayer() {
+	    if (playerToDelete != null) {
+	        try {
+	            playerProvider.deletePlayer(playerToDelete);
+	            showInfo("Jogador removido com sucesso!");
+	            loadAllPlayers();
+	        } catch (Exception e) {
+	            showError("Erro ao remover jogador: " + e.getMessage());
+	        } finally {
+	            playerToDelete = null;
+	        }
+	    }
 	}
 
-	public void findPlayersByTeam() {
-		players = playerProvider.findPlayersByTeam(searchTeam);
-		if (players == null || players.isEmpty()) {
-			showInfo("Nenhum jogador encontrado para o time informado.");
-		}
+	public void findPlayers() {
+	    try {
+	        List<Player> allPlayers = playerProvider.findAllPlayers();
+	        List<Player> filteredPlayers = new ArrayList<>();
+	        
+	        for (Player searchedPlayer : allPlayers) {
+	            boolean matchesName = searchName == null || searchName.trim().isEmpty() || 
+	                                 searchedPlayer.getName().toLowerCase().contains(searchName.toLowerCase());
+	            
+	            boolean matchesTeam = searchTeam == null 
+						|| (searchedPlayer.getTeam() != null && searchedPlayer.getTeam().equals(searchTeam));
+	            
+	            boolean matchesPosition = searchPosition == null || searchedPlayer.getPosition().equals(searchPosition);
+	            
+	            if (matchesName && matchesTeam && matchesPosition) {
+	                filteredPlayers.add(searchedPlayer);
+	            }
+	        }
+	        
+	        players = filteredPlayers;
+	        
+	        if (players.isEmpty()) {
+	            showInfo("Nenhum jogador encontrado com os filtros informados.");
+	        } else {
+	            showInfo(players.size() + " jogador(es) encontrado(s).");
+	        }
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        showError("Erro ao buscar jogadores: " + e.getMessage());
+	    }
 	}
-
-	public void findPlayersByPosition() {
-		if (searchPosition == null) {
-			showInfo("Selecione uma posição para buscar.");
-			return;
-		}
-
-		players = playerProvider.findPlayersByPosition(searchPosition);
-		if (players == null || players.isEmpty()) {
-			showInfo("Nenhum jogador encontrado para a posição informada.");
-		}
+	
+	public void clearFilters() {
+		searchName = null;
+		searchTeam = null;
+		searchPosition = null;
+		loadAllPlayers();
+		showInfo("Filtros limpos. Exibindo todos os jogadores.");
 	}
 
 	public void loadAllPlayers() {
@@ -156,11 +182,11 @@ public class PlayerMB implements Serializable {
 		this.searchName = searchName;
 	}
 
-	public String getSearchTeam() {
+	public Team getSearchTeam() {
 		return searchTeam;
 	}
 
-	public void setSearchTeam(String searchTeam) {
+	public void setSearchTeam(Team searchTeam) {
 		this.searchTeam = searchTeam;
 	}
 

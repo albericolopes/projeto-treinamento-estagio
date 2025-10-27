@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 
 import com.tomus.model.Player;
@@ -87,18 +89,25 @@ public class PlayerDataProvider extends DataProvider implements Serializable {
 
 	public Player findPlayerByAttributes(String name, Double height, Date birthDate) {
 		try {
-			TypedQuery<Player> query = entityManager.createQuery("SELECT p FROM Player p WHERE "
-					+ "LOWER(p.name) = LOWER(:name) AND " + "p.height = :height AND " + "p.birthDate = :birthDate",
-					Player.class);
-
+			TypedQuery<Player> query = entityManager.createQuery(
+				"SELECT p FROM Player p WHERE " +
+				"LOWER(p.name) = LOWER(:name) AND " +
+				"p.height = :height AND " +
+				"p.birthDate = :birthDate",
+				Player.class);
 			query.setParameter("name", name);
 			query.setParameter("height", height);
 			query.setParameter("birthDate", birthDate);
-
-			List<Player> results = query.getResultList();
-
-			return results.isEmpty() ? null : results.get(0);
-
+			
+			return query.getSingleResult();
+			
+		} catch (NoResultException e) {
+			return null;
+		} catch (NonUniqueResultException e) {
+			System.err.println("AVISO: Múltiplos jogadores encontrados com nome='" + name + 
+				"', altura=" + height + ", nascimento=" + birthDate);
+			e.printStackTrace();
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

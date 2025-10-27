@@ -75,46 +75,50 @@
 		<p:panel header="Buscar Jogadores">
 			<p:toolbar>
 				<p:toolbarGroup>
+					<!-- Nome (continua como texto livre) -->
 					<p:inputText id="searchNameInput" value="#{playerMB.searchName}"
-						placeholder="Buscar por nome" />
-					<p:commandButton value="Buscar"
-						action="#{playerMB.findPlayerByName}"
-						update=":tableForm:playersTable :messages" icon="pi pi-search"
-						process="@this searchNameInput" />
-				</p:toolbarGroup>
+						placeholder="Buscar por nome" style="width:200px;" />
 
-				<p:toolbarGroup align="center">
+					<!-- Posição (dropdown) -->
 					<p:selectOneMenu id="searchPositionInput"
-						value="#{playerMB.searchPosition}"
-						style="width:200px; vertical-align: middle;">
+						value="#{playerMB.searchPosition}" style="width:200px;">
 						<f:selectItem itemLabel="Buscar por posição" itemValue=""
 							noSelectionOption="true" />
 						<f:selectItems value="#{playerMB.positions}" var="pos"
-							itemLabel="#{pos.label}" itemValue="#{pos.name()}" />
+							itemLabel="#{pos.label}" itemValue="#{pos}" />
 					</p:selectOneMenu>
 
+					<!-- ✅ Time (agora é dropdown também) -->
+					<p:selectOneMenu id="searchTeamInput"
+						value="#{playerMB.searchTeam}" converter="teamConverter"
+						style="width:200px;">
+						<f:selectItem itemLabel="Buscar por time" itemValue=""
+							noSelectionOption="true" />
+						<f:selectItems value="#{teamMB.teams}" var="t"
+							itemLabel="#{t.name}" itemValue="#{t}" />
+					</p:selectOneMenu>
 
-					<p:commandButton value="Buscar"
-						action="#{playerMB.findPlayersByPosition}"
+					<!-- Botão Buscar -->
+					<p:commandButton value="Buscar" action="#{playerMB.findPlayers}"
 						update=":tableForm:playersTable :messages" icon="pi pi-search"
-						process="@this searchPositionInput" />
+						process="@this searchNameInput searchPositionInput searchTeamInput" />
 				</p:toolbarGroup>
-
 
 				<p:toolbarGroup align="right">
-					<p:inputText id="searchTeamInput" value="#{playerMB.searchTeam}"
-						placeholder="Buscar por time" />
-					<p:commandButton value="Buscar"
-						action="#{playerMB.findPlayersByTeam}"
-						update=":tableForm:playersTable :messages" icon="pi pi-search"
-						process="@this searchTeamInput" />
+					<!-- Botão Limpar Filtros -->
+					<p:commandButton value="Limpar Filtros"
+						action="#{playerMB.clearFilters}"
+						update=":tableForm:playersTable :messages searchNameInput searchPositionInput searchTeamInput"
+						icon="pi pi-times" styleClass="p-button-warning"
+						style="margin-right: 10px;" />
+
+					<!-- Botão Mostrar Todos -->
+					<p:commandButton value="Mostrar Todos"
+						action="#{playerMB.loadAllPlayers}"
+						update=":tableForm:playersTable :messages" icon="pi pi-list"
+						styleClass="p-button-secondary" />
 				</p:toolbarGroup>
 			</p:toolbar>
-
-			<p:commandButton value="Mostrar Todos"
-				action="#{playerMB.loadAllPlayers}"
-				update=":tableForm:playersTable :messages" icon="pi pi-list"
-				style="margin-top:10px" styleClass="p-button-secondary" />
 		</p:panel>
 	</h:form>
 
@@ -152,13 +156,29 @@
 					process="@this" title="Editar"
 					styleClass="p-button-rounded p-button-success p-button-outlined" />
 				<p:commandButton icon="pi pi-trash"
-					action="#{playerMB.deletePlayer(p)}"
-					update=":tableForm:playersTable :messages" process="@this"
-					title="Excluir"
-					styleClass="p-button-danger p-button-rounded p-button-outlined"
-					onclick="return confirm('Tem certeza que deseja excluir este jogador?');" />
+					actionListener="#{playerMB.prepareDelete(p)}"
+					oncomplete="PF('deleteDialog').show()" process="@this"
+					update=":confirmDialogForm" title="Excluir"
+					styleClass="p-button-danger p-button-rounded p-button-outlined" />
 			</p:column>
 		</p:dataTable>
+	</h:form>
+
+	<!-- DIALOGO DE CONFIRMAÇÃO DE EXCLUSÃO -->
+	<h:form id="confirmDialogForm">
+		<p:confirmDialog widgetVar="deleteDialog"
+			header="Confirmação de Exclusão"
+			message="Deseja realmente excluir este jogador?"
+			icon="pi pi-exclamation-triangle" closable="false" resizable="false"
+			draggable="false" width="400">
+
+			<p:commandButton value="Sim" action="#{playerMB.deletePlayer}"
+				update=":tableForm:playersTable :messages"
+				oncomplete="PF('deleteDialog').hide()" styleClass="p-button-danger" />
+
+			<p:commandButton value="Cancelar" type="button"
+				onclick="PF('deleteDialog').hide()" styleClass="p-button-secondary" />
+		</p:confirmDialog>
 	</h:form>
 
 </h:body>

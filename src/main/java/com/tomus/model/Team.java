@@ -3,7 +3,6 @@ package com.tomus.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,13 +22,13 @@ public class Team {
 	@Column(name = "nome", length = 50, nullable = false)
 	private String name;
 
-	@Column(name = "cidade", length = 25, nullable = false)
+	@Column(name = "cidade", length = 50, nullable = false)
 	private String city;
 
-	@Column(name = "estadio", length = 25, nullable = false)
+	@Column(name = "estadio", length = 50, nullable = true)
 	private String stadium;
 
-	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = false)
+	@OneToMany(mappedBy = "team")
 	private List<Player> players = new ArrayList<>();
 
 	public Team() {
@@ -91,5 +90,15 @@ public class Team {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
+	public List<Player> getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(List<Player> players) {
+		this.players = players;
+	}
+	
+	
 
 }

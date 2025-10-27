@@ -1,6 +1,7 @@
 package com.tomus.view;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -24,7 +25,8 @@ public class TeamMB implements Serializable {
 
 	private Team team;
 	private List<Team> teams;
-
+	
+	private Team teamToDelete;
 	private String searchName;
 	private String searchCity;
 
@@ -66,14 +68,58 @@ public class TeamMB implements Serializable {
 		this.team = chosenTeam;
 	}
 
-	public void deleteTeam(Team chosenTeam) {
+	public void deleteTeam() {
+        if (teamToDelete != null) {
+            try {
+                teamProvider.deleteTeam(teamToDelete);
+                showInfo("Time removido com sucesso!");
+                loadAllTeams();
+            } catch (Exception e) {
+                showError("Erro ao remover time: " + e.getMessage());
+            } finally {
+                teamToDelete = null;
+            }
+        } else {
+            showError("Erro: Nenhum time selecionado para exclusão.");
+        }
+    }
+	
+	public void findTeams() {
 		try {
-			teamProvider.deleteTeam(chosenTeam);
-			showInfo("Time removido com sucesso.");
-			loadAllTeams();
+			List<Team> allTeams = teamProvider.findAllTeams();
+			List<Team> filteredTeams = new ArrayList<>();
+			
+			for (Team searchedTeam : allTeams) {
+				boolean matchesName = searchName == null || searchName.trim().isEmpty() 
+						|| searchedTeam.getName().toLowerCase().contains(searchName.toLowerCase());
+				
+				boolean matchesCity = searchCity == null || searchCity.trim().isEmpty() 
+						|| searchedTeam.getCity().toLowerCase().contains(searchCity.toLowerCase());
+				
+				if (matchesName && matchesCity) {
+					filteredTeams.add(searchedTeam);
+				}
+			}
+			
+			teams = filteredTeams;
+			
+			if (teams.isEmpty()) {
+				showInfo("Nenhum time encontrado com os filtros informados.");
+			} else {
+				showInfo(teams.size() + " time(s) encontrado(s).");
+			}
+			
 		} catch (Exception e) {
-			showError("Erro ao remover time: " + e.getMessage());
+			e.printStackTrace();
+			showError("Erro ao buscar times: " + e.getMessage());
 		}
+	}
+	
+	public void clearFilters() {
+		searchName = null;
+		searchCity = null;
+		loadAllTeams();
+		showInfo("Filtros limpos. Exibindo todos os times.");
 	}
 
 	public void findTeamByName() {
@@ -141,4 +187,14 @@ public class TeamMB implements Serializable {
 	public void setSearchCity(String searchCity) {
 		this.searchCity = searchCity;
 	}
+
+	public Team getTeamToDelete() {
+		return teamToDelete;
+	}
+
+	public void setTeamToDelete(Team teamToDelete) {
+		this.teamToDelete = teamToDelete;
+	}
+	
+	
 }

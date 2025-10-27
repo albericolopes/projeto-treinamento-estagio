@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 
 import com.tomus.model.Team;
@@ -44,6 +46,8 @@ public class TeamDataProvider extends DataProvider implements Serializable {
 			beginTransaction();
 			Team chosenTeam = entityManager.find(Team.class, team.getId());
 			if (chosenTeam != null) {
+				chosenTeam.getPlayers().forEach(player -> player.setTeam(null));
+				chosenTeam.getPlayers().forEach(entityManager::merge);
 				entityManager.remove(chosenTeam);
 			}
 			commitTransaction();
@@ -77,22 +81,26 @@ public class TeamDataProvider extends DataProvider implements Serializable {
 	}
 	
 	public Team findTeamByAttributes(String name, String city) {
-		try {
-			TypedQuery<Team> query = entityManager.createQuery("SELECT t FROM Team t WHERE "
-					+ "LOWER(t.name) = LOWER(:name) AND " + "LOWER(t.city) = LOWER(:city)",
-					Team.class);
-
-			query.setParameter("name", name);
-			query.setParameter("city", city);
-
-			List<Team> results = query.getResultList();
-
-			return results.isEmpty() ? null : results.get(0);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	    try {
+	        TypedQuery<Team> query = entityManager.createQuery(
+	            "SELECT t FROM Team t WHERE LOWER(t.name) = LOWER(:name) AND LOWER(t.city) = LOWER(:city)",
+	            Team.class);
+	        query.setParameter("name", name);
+	        query.setParameter("city", city);
+	        
+	        return query.getSingleResult();
+	        
+	    } catch (NoResultException e) {
+	        
+	        return null;
+	    } catch (NonUniqueResultException e) {
+	        
+	        e.printStackTrace();
+	        return null;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
 
 	public List<Team> findAllTeams() {
